@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import InitClient from './InitClient';
 import { ArrowRight, Image, Wand2, Database, Clock } from 'lucide-react';
+import ImageGenerator from './components/ImageGenerator';
+import ImageEditor from './components/ImageEditor';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24">
+    <main className="flex min-h-screen flex-col items-center p-6 md:p-12">
       {/* Client component to initialize directories */}
       <InitClient />
       
@@ -23,7 +25,13 @@ export default function Home() {
           </Link>
         </div>
         
-        <div className="feature-grid">
+        {/* Image Generator Component */}
+        <ImageGenerator />
+        
+        {/* Image Editor Component */}
+        <ImageEditor />
+        
+        <div className="feature-grid mt-12">
           <div className="feature-card">
             <div className="flex items-center mb-3">
               <Wand2 className="mr-2 text-blue-500" size={24} />
