@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ApiResponse } from "@/lib/types";
-import { saveImage, fetchImageFromUrl } from "@/lib/utils";
+import { saveImage, fetchImageFromUrl } from "@/lib/server-utils";
 
 // Initialize the Google Gen AI client with your API key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
@@ -71,15 +71,16 @@ export async function POST(req: NextRequest) {
     let responseMimeType = "image/png";
 
     // Process the response
-    if (response.candidates && response.candidates.length > 0) {
+    if (response && response.candidates && response.candidates.length > 0 && 
+        response.candidates[0].content && response.candidates[0].content.parts) {
       const parts = response.candidates[0].content.parts;
       
       for (const part of parts) {
-        if ("inlineData" in part && part.inlineData) {
+        if (part && "inlineData" in part && part.inlineData) {
           // Get the image data
           generatedImageData = part.inlineData.data;
           responseMimeType = part.inlineData.mimeType || "image/png";
-        } else if ("text" in part && part.text) {
+        } else if (part && "text" in part && part.text) {
           // Store the text
           textResponse = part.text;
         }

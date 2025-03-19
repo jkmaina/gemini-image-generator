@@ -209,28 +209,3 @@ export async function cleanupOldImages(maxAge: number = 7): Promise<number> {
     return 0;
   }
 }
-
-// Simple rate limiting (in-memory)
-const rateLimits: Record<string, { count: number, resetTime: number }> = {};
-
-export function checkRateLimit(ip: string, limit: number = 10, windowMs: number = 60000): boolean {
-  const now = Date.now();
-  
-  // Initialize or reset if window has passed
-  if (!rateLimits[ip] || now > rateLimits[ip].resetTime) {
-    rateLimits[ip] = {
-      count: 1,
-      resetTime: now + windowMs
-    };
-    return true;
-  }
-  
-  // Check if limit is reached
-  if (rateLimits[ip].count >= limit) {
-    return false;
-  }
-  
-  // Increment count
-  rateLimits[ip].count++;
-  return true;
-}
