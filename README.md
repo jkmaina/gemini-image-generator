@@ -7,18 +7,23 @@ A Next.js application that leverages Google's Gemini 2.0 Flash experimental mode
 ### Portrait & People Photography
 Generate professional-quality portraits and people photography for business, social media, or marketing.
 
-![Portrait Photography Example](public/generated-images/cace3fd73cbddcaf0d4e658861661c2e.png)
+<img src="public/generated-images/cace3fd73cbddcaf0d4e658861661c2e.png" alt="Portrait Photography Example" width="600"/>
+
 *Prompt: "Professional portrait photo of a business person in a modern office setting, wearing a suit, photorealistic, 8k resolution, studio lighting"*
 
 ### Product Visualization & Editing
 Create product images and easily modify product attributes with simple text instructions.
 
 **Original Product Image:**
-![Original Product Image](public/generated-images/b083f6ba256a256b35e048da26bd45c6.png)
+
+<img src="public/generated-images/b083f6ba256a256b35e048da26bd45c6.png" alt="Original Product Image" width="600"/>
+
 *Prompt: "Modern smartphone with sleek design on a white background, product photography, 8k resolution, studio lighting"*
 
 **Edited Product Image:**
-![Edited Product Image](public/generated-images/f0f750275bd468fcd71adaebe4b5e107.png)
+
+<img src="public/generated-images/f0f750275bd468fcd71adaebe4b5e107.png" alt="Edited Product Image" width="600"/>
+
 *Edit Prompt: "Change the smartphone color to blue and add a holographic display showing a 3D map"*
 
 ## Prerequisites
