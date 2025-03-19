@@ -9,10 +9,12 @@ import { ApiInfo } from "@/components/api-info";
 
 export default function Home() {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
-  const tabsRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState("generate");
 
   const handleImageGenerated = (imageUrl: string) => {
     setCurrentImageUrl(imageUrl);
+    // Automatically switch to edit tab after generating an image
+    setActiveTab("edit");
   };
 
   const handleImageEdited = (imageUrl: string) => {
@@ -30,7 +32,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div>
-          <Tabs defaultValue="generate" className="w-full" ref={tabsRef}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="generate">Generate</TabsTrigger>
               <TabsTrigger value="edit">Edit</TabsTrigger>
@@ -44,6 +46,7 @@ export default function Home() {
               <ImageEditorForm 
                 onImageEdited={handleImageEdited} 
                 initialImageUrl={currentImageUrl || ""}
+                readOnlyUrl={!!currentImageUrl}
               />
             </TabsContent>
           </Tabs>

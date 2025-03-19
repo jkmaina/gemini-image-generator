@@ -10,9 +10,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 interface ImageEditorFormProps {
   onImageEdited?: (imageUrl: string) => void;
   initialImageUrl?: string;
+  readOnlyUrl?: boolean;
 }
 
-export function ImageEditorForm({ onImageEdited, initialImageUrl = "" }: ImageEditorFormProps) {
+export function ImageEditorForm({ 
+  onImageEdited, 
+  initialImageUrl = "", 
+  readOnlyUrl = false 
+}: ImageEditorFormProps) {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState(initialImageUrl);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,8 +86,14 @@ export function ImageEditorForm({ onImageEdited, initialImageUrl = "" }: ImageEd
                 placeholder="Enter the URL of the image to edit (e.g., /generated-images/filename.png)"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || readOnlyUrl}
+                className={readOnlyUrl ? "bg-muted cursor-not-allowed" : ""}
               />
+              {readOnlyUrl && (
+                <p className="text-xs text-muted-foreground">
+                  Using the image you just generated. To use a different image, clear the URL above.
+                </p>
+              )}
             </div>
             <div className="flex flex-col space-y-2">
               <Label htmlFor="editPrompt">Editing Instructions</Label>
@@ -93,6 +104,7 @@ export function ImageEditorForm({ onImageEdited, initialImageUrl = "" }: ImageEd
                 onChange={(e) => setPrompt(e.target.value)}
                 className="min-h-[120px]"
                 disabled={isLoading}
+                autoFocus={readOnlyUrl}
               />
               {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
