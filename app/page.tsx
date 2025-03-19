@@ -1,164 +1,68 @@
-"use client";
-import { useState } from "react";
-import { ImageUpload } from "@/components/ImageUpload";
-import { ImagePromptInput } from "@/components/ImagePromptInput";
-import { ImageResultDisplay } from "@/components/ImageResultDisplay";
-import { ImageIcon, Wand2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HistoryItem } from "@/lib/types";
+import Link from 'next/link';
+import InitClient from './InitClient';
+import { ArrowRight, Image, Wand2, Database, Clock } from 'lucide-react';
 
 export default function Home() {
-  const [image, setImage] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [description, setDescription] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-
-  const handleImageSelect = (imageData: string) => {
-    setImage(imageData || null);
-  };
-
-  const handlePromptSubmit = async (prompt: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // If we have a generated image, use that for editing, otherwise use the uploaded image
-      const imageToEdit = generatedImage || image;
-
-      // Prepare the request data as JSON
-      const requestData = {
-        prompt,
-        image: imageToEdit,
-        history: history.length > 0 ? history : undefined,
-      };
-
-      const response = await fetch("/api/image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate image");
-      }
-
-      const data = await response.json();
-
-      if (data.image) {
-        // Update the generated image and description
-        setGeneratedImage(data.image);
-        setDescription(data.description || null);
-
-        // Update history locally - add user message
-        const userMessage: HistoryItem = {
-          role: "user",
-          parts: [
-            { text: prompt },
-            ...(imageToEdit ? [{ image: imageToEdit }] : []),
-          ],
-        };
-
-        // Add AI response
-        const aiResponse: HistoryItem = {
-          role: "model",
-          parts: [
-            ...(data.description ? [{ text: data.description }] : []),
-            ...(data.image ? [{ image: data.image }] : []),
-          ],
-        };
-
-        // Update history with both messages
-        setHistory((prevHistory) => [...prevHistory, userMessage, aiResponse]);
-      } else {
-        setError("No image returned from API");
-      }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-      console.error("Error processing request:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReset = () => {
-    setImage(null);
-    setGeneratedImage(null);
-    setDescription(null);
-    setLoading(false);
-    setError(null);
-    setHistory([]);
-  };
-
-  // If we have a generated image, we want to edit it next time
-  const currentImage = generatedImage || image;
-  const isEditing = !!currentImage;
-
-  // Get the latest image to display (always the generated image)
-  const displayImage = generatedImage;
-
   return (
-    <main className="min-h-screen flex items-center justify-center bg-background p-8">
-      <Card className="w-full max-w-4xl border-0 bg-card shadow-none">
-        <CardHeader className="flex flex-col items-center justify-center space-y-2">
-          <CardTitle className="flex items-center gap-2 text-foreground">
-            <Wand2 className="w-8 h-8 text-primary" />
-            Image Creation & Editing
-          </CardTitle>
-          <span className="text-sm font-mono text-muted-foreground">
-            powered by Google DeepMind Gemini 2.0 Flash
-          </span>
-        </CardHeader>
-        <CardContent className="space-y-6 pt-6 w-full">
-          {error && (
-            <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-              {error}
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24">
+      {/* Client component to initialize directories */}
+      <InitClient />
+      
+      <div className="z-10 max-w-5xl w-full items-center justify-between">
+        <h1 className="page-title">
+          Gemini Image Generation API
+        </h1>
+        
+        <div className="api-card">
+          <h2 className="text-2xl font-semibold mb-4">Interactive API Documentation</h2>
+          <p className="mb-6 text-lg">
+            Explore and test the API using our interactive Swagger documentation. Generate and edit images directly from your browser.
+          </p>
+          <Link href="/docs" className="docs-button">
+            View API Docs <ArrowRight className="inline ml-2" size={18} />
+          </Link>
+        </div>
+        
+        <div className="feature-grid">
+          <div className="feature-card">
+            <div className="flex items-center mb-3">
+              <Wand2 className="mr-2 text-blue-500" size={24} />
+              <h2 className="text-xl font-semibold">Generate Images</h2>
             </div>
-          )}
+            <p>Create stunning images from text prompts using Google's Gemini 2.0 Flash model with advanced AI capabilities.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="flex items-center mb-3">
+              <Image className="mr-2 text-blue-500" size={24} />
+              <h2 className="text-xl font-semibold">Edit Images</h2>
+            </div>
+            <p>Modify existing images with natural language instructions. Change colors, styles, backgrounds and more.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="flex items-center mb-3">
+              <Database className="mr-2 text-blue-500" size={24} />
+              <h2 className="text-xl font-semibold">Manage Images</h2>
+            </div>
+            <p>List, retrieve, and delete generated images with a simple RESTful API. Track metadata and usage.</p>
+          </div>
+          
+          <div className="feature-card">
+            <div className="flex items-center mb-3">
+              <Clock className="mr-2 text-blue-500" size={24} />
+              <h2 className="text-xl font-semibold">Automatic Cleanup</h2>
+            </div>
+            <p>Automatically remove old images to save storage space. Configure retention policies to match your needs.</p>
+          </div>
+        </div>
 
-          {!displayImage && !loading ? (
-            <>
-              <ImageUpload
-                onImageSelect={handleImageSelect}
-                currentImage={currentImage}
-              />
-              <ImagePromptInput
-                onSubmit={handlePromptSubmit}
-                isEditing={isEditing}
-                isLoading={loading}
-              />
-            </>
-          ) : loading ? (
-            <div
-              role="status"
-              className="flex items-center mx-auto justify-center h-56 max-w-sm bg-gray-300 rounded-lg animate-pulse dark:bg-secondary"
-            >
-              <ImageIcon className="w-10 h-10 text-gray-200 dark:text-muted-foreground" />
-              <span className="pl-4 font-mono font-xs text-muted-foreground">
-                Processing...
-              </span>
-            </div>
-          ) : (
-            <>
-              <ImageResultDisplay
-                imageUrl={displayImage || ""}
-                description={description}
-                onReset={handleReset}
-                conversationHistory={history}
-              />
-              <ImagePromptInput
-                onSubmit={handlePromptSubmit}
-                isEditing={true}
-                isLoading={loading}
-              />
-            </>
-          )}
-        </CardContent>
-      </Card>
+        <div className="mt-12 text-center">
+          <p className="text-sm opacity-70">
+            Powered by Google Gemini 2.0 Flash • Built with Next.js • Containerized with Docker
+          </p>
+        </div>
+      </div>
     </main>
   );
 }

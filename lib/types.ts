@@ -1,21 +1,49 @@
 // Define the interface for conversation history items
 export interface HistoryItem {
-  // Role can be either "user" or "model"
   role: "user" | "model";
-  // Parts can contain text and/or images
   parts: HistoryPart[];
 }
 
 // Define the interface for history parts
 export interface HistoryPart {
-  // Text content (optional)
   text?: string;
-  // Image content as data URL (optional)
-  // Format: data:image/png;base64,... or data:image/jpeg;base64,...
   image?: string;
 }
 
-// Note: When sending to the Gemini API:
-// 1. User messages can contain both text and images (as inlineData)
-// 2. Model messages should only contain text parts
-// 3. Images in history are stored as data URLs in our app, but converted to base64 for the API
+// Define the interface for image metadata
+export interface ImageMetadata {
+  id: string;
+  prompt: string;
+  createdAt: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  url: string;
+}
+
+// Define the interface for API response
+export interface ApiResponse {
+  success: boolean;
+  data?: {
+    imageUrl?: string;
+    description?: string;
+    metadata?: ImageMetadata;
+    history?: HistoryItem[];
+  };
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+}
+
+// Define supported image formats
+export type ImageFormat = 'png' | 'jpeg' | 'webp';
+
+// Define image generation options
+export interface ImageOptions {
+  format?: ImageFormat;
+  width?: number;
+  height?: number;
+  quality?: number;
+}

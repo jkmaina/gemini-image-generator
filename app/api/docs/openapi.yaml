@@ -1,0 +1,401 @@
+openapi: 3.0.0
+info:
+  title: Gemini Image Generation API
+  version: 1.0.0
+  description: |
+    API for generating and editing images using Google's Gemini 2.0 Flash experimental model.
+    
+    Features:
+    - Generate images from text prompts
+    - Edit existing images with text instructions
+    - Store and manage generated images
+    - Track image metadata
+    - Rate limiting to prevent abuse
+    - Automatic cleanup of old images
+  
+  contact:
+    name: API Support
+    email: support@example.com
+    url: https://github.com/yourusername/gemini-image
+  
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+
+tags:
+  - name: Generation
+    description: Image generation endpoints
+  - name: Management
+    description: Image management endpoints
+
+paths:
+  /generate:
+    post:
+      summary: Generate a new image
+      description: Generate an image from a text prompt using Gemini 2.0
+      tags:
+        - Generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: Text description of the image to generate
+                  example: A 3D rendered robot puppy playing with a glowing blue ball
+                options:
+                  type: object
+                  properties:
+                    format:
+                      type: string
+                      enum: [png, jpeg, webp]
+                      default: png
+                    quality:
+                      type: integer
+                      minimum: 1
+                      maximum: 100
+                      default: 90
+      responses:
+        '200':
+          description: Image generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /edit:
+    post:
+      summary: Edit an existing image
+      description: Edit an image using a text prompt
+      tags:
+        - Generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+                - imageUrl
+              properties:
+                prompt:
+                  type: string
+                  description: Text description of the edits to make
+                  example: Make the robot puppy gold colored
+                imageUrl:
+                  type: string
+                  description: URL of the image to edit
+                  example: /generated-images/f350adb290046c5fd7d46298d677b922.png
+      responses:
+        '200':
+          description: Image edited successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /images:
+    get:
+      summary: List all images
+      description: Get a paginated list of all generated images
+      tags:
+        - Management
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of images to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Number of images to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Images listed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      images:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ImageMetadata'
+                      pagination:
+                        type: object
+                        properties:
+                          limit:
+                            type: integer
+                            example: 10
+                          offset:
+                            type: integer
+                            example: 0
+                          total:
+                            type: integer
+                            example: 3
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      summary: Cleanup old images
+      description: Delete images older than the specified age
+      tags:
+        - Management
+      parameters:
+        - name: maxAge
+          in: query
+          description: Maximum age in days
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 7
+      responses:
+        '200':
+          description: Cleanup completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      deletedCount:
+                        type: integer
+                        example: 3
+                      maxAge:
+                        type: integer
+                        example: 7
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /images/{imageId}:
+    get:
+      summary: Get image metadata
+      description: Get metadata for a specific image
+      tags:
+        - Management
+      parameters:
+        - name: imageId
+          in: path
+          description: ID of the image
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      metadata:
+                        $ref: '#/components/schemas/ImageMetadata'
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      summary: Delete an image
+      description: Delete a specific image by ID
+      tags:
+        - Management
+      parameters:
+        - name: imageId
+          in: path
+          description: ID of the image to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Image deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Image deleted successfully
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ImageMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 1b629472-cc42-4dc3-ad1f-a7dce5945260
+        prompt:
+          type: string
+          example: A 3D rendered robot puppy playing with a glowing blue ball
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-03-18T15:05:49.809Z
+        filename:
+          type: string
+          example: f350adb290046c5fd7d46298d677b922.png
+        mimeType:
+          type: string
+          example: image/png
+        size:
+          type: integer
+          example: 834416
+        url:
+          type: string
+          example: /generated-images/f350adb290046c5fd7d46298d677b922.png
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            imageUrl:
+              type: string
+              example: /generated-images/f350adb290046c5fd7d46298d677b922.png
+            description:
+              type: string
+              nullable: true
+            metadata:
+              $ref: '#/components/schemas/ImageMetadata'
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: MISSING_PROMPT
+            message:
+              type: string
+              example: Prompt is required
+            details:
+              type: string
+              nullable: true
