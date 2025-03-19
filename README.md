@@ -4,17 +4,22 @@ A Next.js application that leverages Google's Gemini 2.0 Flash experimental mode
 
 ## Sample Use Cases & Results
 
-### Image Generation
-Generate custom artwork from text prompts with remarkable detail and accuracy.
+### Portrait & People Photography
+Generate professional-quality portraits and people photography for business, social media, or marketing.
 
-![Image Generation Example](public/generated-images/58016f52646149a04941b16913402c98.png)
-*Prompt: "A futuristic cityscape with flying cars and neon lights"*
+![Portrait Photography Example](public/generated-images/cace3fd73cbddcaf0d4e658861661c2e.png)
+*Prompt: "Professional portrait photo of a business person in a modern office setting, wearing a suit, photorealistic, 8k resolution, studio lighting"*
 
-### Image Editing
-Modify existing images with simple text instructions to refine or transform them.
+### Product Visualization & Editing
+Create product images and easily modify product attributes with simple text instructions.
 
-![Image Editing Example](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
-*Original image edited with prompt: "Add a holographic display and make the background more modern"*
+**Original Product Image:**
+![Original Product Image](public/generated-images/b083f6ba256a256b35e048da26bd45c6.png)
+*Prompt: "Modern smartphone with sleek design on a white background, product photography, 8k resolution, studio lighting"*
+
+**Edited Product Image:**
+![Edited Product Image](public/generated-images/f0f750275bd468fcd71adaebe4b5e107.png)
+*Edit Prompt: "Change the smartphone color to blue and add a holographic display showing a 3D map"*
 
 ## Prerequisites
 
@@ -68,7 +73,7 @@ Generate a new image:
 ```bash
 curl -X POST http://localhost:3000/api/generate \
   -H "Content-Type: application/json" \
-  -d '{"prompt": "a cute robot painting a sunset"}'
+  -d '{"prompt": "a professional headshot of a business executive"}'
 ```
 
 Edit an existing image:
@@ -76,8 +81,8 @@ Edit an existing image:
 curl -X POST http://localhost:3000/api/edit \
   -H "Content-Type: application/json" \
   -d '{
-    "imageId": "your-image-id",
-    "prompt": "make the sunset more vibrant"
+    "imageUrl": "/generated-images/your-image-filename.png",
+    "prompt": "change the background to a city skyline"
   }'
 ```
 
@@ -93,13 +98,13 @@ curl -X POST http://localhost:3000/api/edit \
 
 ## Use Cases
 
-- **Content Creation**: Generate custom images for websites, blogs, and social media
-- **Product Design**: Visualize product concepts and variations
-- **Marketing Materials**: Create unique visuals for marketing campaigns
-- **UI/UX Prototyping**: Generate interface mockups and design elements
-- **Educational Content**: Create illustrations for educational materials
-- **Game Development**: Generate concept art and game assets
-- **E-commerce**: Create product visualizations and variations
+- **Professional Portraits**: Generate headshots and professional photos
+- **Product Photography**: Create and edit product images for e-commerce
+- **Marketing Materials**: Design visual content for marketing campaigns
+- **Social Media Content**: Generate engaging visuals for social platforms
+- **UI/UX Prototyping**: Create interface mockups and design elements
+- **Real Estate Visualization**: Generate or edit property images
+- **Fashion & Apparel**: Visualize clothing items with different styles and colors
 
 ## Docker Support (Optional)
 
