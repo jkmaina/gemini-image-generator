@@ -4,17 +4,17 @@ A Next.js application that leverages Google's Gemini 2.0 Flash experimental mode
 
 ## Sample Use Cases & Results
 
-### Creative Content Generation
-Generate custom artwork for blogs, social media, or marketing materials.
+### Image Generation
+Generate custom artwork from text prompts with remarkable detail and accuracy.
 
-![Creative Content Example](public/generated-images/58016f52646149a04941b16913402c98.png)
+![Image Generation Example](public/generated-images/58016f52646149a04941b16913402c98.png)
 *Prompt: "A futuristic cityscape with flying cars and neon lights"*
 
-### Product Visualization
-Create product mockups or visualize concepts before production.
+### Image Editing
+Modify existing images with simple text instructions to refine or transform them.
 
-![Product Visualization Example](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
-*Prompt: "A sleek smartphone with holographic display in a modern living room"*
+![Image Editing Example](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
+*Original image edited with prompt: "Add a holographic display and make the background more modern"*
 
 ## Prerequisites
 
