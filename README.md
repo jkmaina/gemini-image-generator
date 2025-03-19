@@ -1,228 +1,119 @@
 # Gemini Image Generation API
 
-A Next.js API for generating and editing images using Google's Gemini 2.0 Flash experimental model.
+Generate and edit images using Google's Gemini 2.0 Flash model through a simple Next.js API. Perfect for developers looking to add AI image generation capabilities to their applications.
 
-## Features
+![Sample Generated Image 1](public/generated-images/58016f52646149a04941b16913402c98.png)
+![Sample Generated Image 2](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
 
-- Generate images from text prompts using Gemini 2.0 Flash
-- Edit existing images with text instructions
-- Store and manage generated images with metadata
-- Interactive API documentation with Swagger UI
-- Rate limiting and abuse prevention
-- Automatic cleanup of old images
-- Docker support for easy deployment
+## Prerequisites
 
-## Quick Start with Docker Compose
+- Node.js 18+ installed
+- Google Cloud account with Gemini API access
+- Gemini API key
 
-The easiest way to get started is using Docker Compose:
+## Quick Start
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/gemini-image.git
-cd gemini-image
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jkmaina/gemini-image.git
+   cd gemini-image
+   ```
 
-# Create .env.local file with your API key
-cp .env.example .env.local
-# Edit .env.local to add your API key
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Start the service
-./scripts/start.sh
-```
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Edit `.env.local` and add your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
 
-The API will be available at `http://localhost:3000` with interactive documentation at `/docs`.
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-## Docker Configuration
+5. **Access the application**
+   - Web Interface: http://localhost:3000
+   - API Documentation: http://localhost:3000/docs
 
-### Using Docker Compose
+## Testing the API
 
-```bash
-# Start the service
-docker-compose up -d
+### Using the Web Interface
 
-# Stop the service
-docker-compose down
-```
+1. Open http://localhost:3000 in your browser
+2. Enter a text prompt describing the image you want to generate
+3. Click "Generate" and wait for your image
 
-### Manual Docker Setup
+### Using the API Directly
 
-```bash
-# Build the image
-docker build -t gemini-image-api .
-
-# Run the container
-docker run -d \
-  -p 3000:3000 \
-  -e GEMINI_API_KEY=your_api_key_here \
-  -v ./data:/app/data \
-  -v ./public/generated-images:/app/public/generated-images \
-  --name gemini-api \
-  gemini-image-api
-```
-
-## Local Development
-
-### Prerequisites
-
-- Node.js 18.x or higher
-- Google Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/gemini-image.git
-cd gemini-image
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env.local` file:
-```bash
-GEMINI_API_KEY=your_api_key_here
-RATE_LIMIT=10
-RATE_LIMIT_WINDOW_MS=60000
-```
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-## API Documentation
-
-Interactive API documentation is available at:
-- Swagger UI: `http://localhost:3000/docs`
-- OpenAPI Spec: `http://localhost:3000/api/docs`
-
-### Key Endpoints
-
-- `POST /api/generate` - Generate images from text prompts
-- `POST /api/edit` - Edit existing images
-- `GET /api/images` - List generated images
-- `GET /api/images/{id}` - Get image metadata
-- `DELETE /api/images/{id}` - Delete specific image
-- `DELETE /api/images` - Cleanup old images
-- `GET /api/health` - Health check endpoint for monitoring
-
-## Example Usage
-
-### Generate an Image
-
+Generate a new image:
 ```bash
 curl -X POST http://localhost:3000/api/generate \
   -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "A 3D rendered robot puppy playing with a glowing blue ball",
-    "options": {
-      "format": "png",
-      "quality": 90
-    }
-  }'
+  -d '{"prompt": "a cute robot painting a sunset"}'
 ```
 
-### Edit an Image
-
+Edit an existing image:
 ```bash
 curl -X POST http://localhost:3000/api/edit \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "Make the robot puppy gold colored",
-    "imageUrl": "/generated-images/example.png"
+    "imageId": "your-image-id",
+    "prompt": "make the sunset more vibrant"
   }'
 ```
 
-### List Images
+## Features
+
+- 🎨 Generate images from text descriptions
+- ✏️ Edit existing images with text instructions
+- 📚 Interactive API documentation
+- 💾 Persistent storage for generated images
+- 🔍 Image metadata tracking
+- 🚀 Fast response times
+
+## Docker Support (Optional)
+
+If you prefer using Docker:
 
 ```bash
-curl "http://localhost:3000/api/images?limit=10&offset=0"
+# Start the application
+docker-compose up -d
+
+# Stop the application
+docker-compose down
 ```
 
-## Configuration
+## Project Structure
 
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GEMINI_API_KEY` | Google Gemini API key | Required |
-| `RATE_LIMIT` | Requests per window | 10 |
-| `RATE_LIMIT_WINDOW_MS` | Rate limit window | 60000 |
-
-### Docker Volumes
-
-The Docker setup includes two persistent volumes:
-
-- `./data:/app/data` - Stores image metadata
-- `./public/generated-images:/app/public/generated-images` - Stores generated images
-
-### Storage Structure
-
-- `/public/generated-images/` - Generated image files
-- `/data/metadata/` - Image metadata JSON files
-
-## Error Handling
-
-All API endpoints return consistent error responses:
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human readable message",
-    "details": "Optional details"
-  }
-}
 ```
-
-Common error codes:
-- `MISSING_PROMPT` - Prompt is required
-- `MISSING_IMAGE_URL` - Image URL is required
-- `NO_IMAGE_GENERATED` - Generation failed
-- `IMAGE_NOT_FOUND` - Image not found
-- `RATE_LIMIT_EXCEEDED` - Too many requests
-- `GENERATION_FAILED` - Gemini API error
-- `EDIT_FAILED` - Image editing failed
-
-## Security Considerations
-
-1. API Key Protection
-   - Store GEMINI_API_KEY securely
-   - Use environment variables
-   - Never commit API keys
-
-2. Rate Limiting
-   - Prevents abuse and DoS
-   - Configurable limits
-   - IP-based tracking
-
-3. Input Validation
-   - Prompt length limits
-   - File size checks
-   - MIME type validation
-
-4. Docker Security
-   - Non-root user
-   - Minimal base image
-   - Volume permissions
+├── app/                  # Next.js application code
+│   ├── api/             # API routes
+│   └── docs/            # API documentation
+├── public/              # Static files
+│   └── generated-images # Generated images storage
+├── lib/                 # Utility functions
+└── data/               # Metadata storage
+```
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgements
+## Support
 
-- [Google Gemini API](https://ai.google.dev/gemini-api)
-- [Next.js](https://nextjs.org/)
-- [Swagger UI](https://swagger.io/tools/swagger-ui/)
-- [Docker](https://www.docker.com/)
+If you find this project helpful, please give it a ⭐️ on GitHub!
