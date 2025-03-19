@@ -15,6 +15,19 @@ const nextConfig = {
     return config;
   },
 
+  // Configure image domains and patterns
+  images: {
+    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/generated-images/**',
+      },
+    ],
+  },
+
   // Add CORS headers for API routes
   async headers() {
     return [
