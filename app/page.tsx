@@ -3,6 +3,8 @@ import InitClient from './InitClient';
 import { ArrowRight, Image, Wand2, Database, Clock } from 'lucide-react';
 import ImageGenerator from './components/ImageGenerator';
 import ImageEditor from './components/ImageEditor';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -11,19 +13,25 @@ export default function Home() {
       <InitClient />
       
       <div className="z-10 max-w-5xl w-full items-center justify-between">
-        <h1 className="page-title">
+        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
           Gemini Image Generation API
         </h1>
         
-        <div className="api-card">
-          <h2 className="text-2xl font-semibold mb-4">Interactive API Documentation</h2>
-          <p className="mb-6 text-lg">
-            Explore and test the API using our interactive Swagger documentation. Generate and edit images directly from your browser.
-          </p>
-          <Link href="/docs" className="docs-button">
-            View API Docs <ArrowRight className="inline ml-2" size={18} />
-          </Link>
-        </div>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Interactive API Documentation</CardTitle>
+            <CardDescription>
+              Explore and test the API using our interactive Swagger documentation. Generate and edit images directly from your browser.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild>
+              <Link href="/docs">
+                View API Docs <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
         
         {/* Image Generator Component */}
         <ImageGenerator />
@@ -31,42 +39,58 @@ export default function Home() {
         {/* Image Editor Component */}
         <ImageEditor />
         
-        <div className="feature-grid mt-12">
-          <div className="feature-card">
-            <div className="flex items-center mb-3">
-              <Wand2 className="mr-2 text-blue-500" size={24} />
-              <h2 className="text-xl font-semibold">Generate Images</h2>
-            </div>
-            <p>Create stunning images from text prompts using Google's Gemini 2.0 Flash model with advanced AI capabilities.</p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Wand2 className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Generate Images</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p>Create stunning images from text prompts using Google's Gemini 2.0 Flash model with advanced AI capabilities.</p>
+            </CardContent>
+          </Card>
           
-          <div className="feature-card">
-            <div className="flex items-center mb-3">
-              <Image className="mr-2 text-blue-500" size={24} />
-              <h2 className="text-xl font-semibold">Edit Images</h2>
-            </div>
-            <p>Modify existing images with natural language instructions. Change colors, styles, backgrounds and more.</p>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Image className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Edit Images</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p>Modify existing images with natural language instructions. Change colors, styles, backgrounds and more.</p>
+            </CardContent>
+          </Card>
           
-          <div className="feature-card">
-            <div className="flex items-center mb-3">
-              <Database className="mr-2 text-blue-500" size={24} />
-              <h2 className="text-xl font-semibold">Manage Images</h2>
-            </div>
-            <p>List, retrieve, and delete generated images with a simple RESTful API. Track metadata and usage.</p>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Database className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Manage Images</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p>List, retrieve, and delete generated images with a simple RESTful API. Track metadata and usage.</p>
+            </CardContent>
+          </Card>
           
-          <div className="feature-card">
-            <div className="flex items-center mb-3">
-              <Clock className="mr-2 text-blue-500" size={24} />
-              <h2 className="text-xl font-semibold">Automatic Cleanup</h2>
-            </div>
-            <p>Automatically remove old images to save storage space. Configure retention policies to match your needs.</p>
-          </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Clock className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Automatic Cleanup</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p>Automatically remove old images to save storage space. Configure retention policies to match your needs.</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-sm opacity-70">
+          <p className="text-sm text-muted-foreground">
             Powered by Google Gemini 2.0 Flash • Built with Next.js • Containerized with Docker
           </p>
         </div>

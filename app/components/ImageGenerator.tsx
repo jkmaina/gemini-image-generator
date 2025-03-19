@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function ImageGenerator() {
   const [prompt, setPrompt] = useState('');
@@ -42,59 +46,68 @@ export default function ImageGenerator() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-4">Generate Image</h2>
-      
-      <div className="mb-4">
-        <label htmlFor="prompt" className="block text-sm font-medium mb-2">
-          Enter your prompt
-        </label>
-        <textarea
-          id="prompt"
-          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-          rows={3}
-          placeholder="Describe the image you want to generate..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-      </div>
-      
-      <button
-        onClick={handleGenerate}
-        disabled={isGenerating || !prompt.trim()}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {isGenerating ? (
-          <>
-            <Loader2 className="inline-block animate-spin mr-2" size={16} />
-            Generating...
-          </>
-        ) : (
-          'Generate Image'
-        )}
-      </button>
-      
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
-      
-      {generatedImage && !error && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Generated Image</h3>
-          <div className="border rounded-md overflow-hidden">
-            <img 
-              src={generatedImage} 
-              alt="Generated from prompt" 
-              className="w-full h-auto"
+    <Card className="w-full mt-8">
+      <CardHeader>
+        <CardTitle>Generate Image</CardTitle>
+        <CardDescription>
+          Create images from text prompts using Google's Gemini 2.0 Flash model
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid w-full gap-4">
+          <div className="flex flex-col space-y-2">
+            <Label htmlFor="prompt" className="text-base">
+              Enter your prompt
+            </Label>
+            <Textarea
+              id="prompt"
+              placeholder="Describe the image you want to generate in detail..."
+              className="min-h-32 text-base"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
             />
           </div>
-          <div className="mt-2 text-sm text-gray-500">
-            <p>Prompt: {prompt}</p>
-          </div>
+          
+          {error && (
+            <div className="p-4 bg-destructive/15 text-destructive rounded-md border border-destructive/30">
+              <p>{error}</p>
+            </div>
+          )}
+          
+          {generatedImage && !error && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium">Generated Image</h3>
+              <div className="border rounded-md overflow-hidden shadow-sm">
+                <img 
+                  src={generatedImage} 
+                  alt="Generated from prompt" 
+                  className="w-full h-auto"
+                />
+              </div>
+              <div className="p-3 bg-muted rounded-md">
+                <p className="text-sm"><span className="font-medium">Prompt:</span> {prompt}</p>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+      <CardFooter>
+        <Button 
+          onClick={handleGenerate}
+          disabled={isGenerating || !prompt.trim()}
+          className="w-full"
+          size="lg"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            'Generate Image'
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

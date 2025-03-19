@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { Loader2, Upload } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function ImageEditor() {
   const [editPrompt, setEditPrompt] = useState('');
@@ -89,83 +93,91 @@ export default function ImageEditor() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-8">
-      <h2 className="text-2xl font-bold mb-4">Edit Image</h2>
-      
-      <div className="mb-4">
-        <div {...getRootProps()} className="border-2 border-dashed border-gray-300 rounded-md p-6 cursor-pointer hover:border-blue-500 transition-colors">
-          <input {...getInputProps()} />
-          <div className="text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2">Drag & drop an image here, or click to select</p>
-            <p className="text-sm text-gray-500">PNG, JPG, JPEG, or WebP</p>
+    <Card className="w-full mt-8">
+      <CardHeader>
+        <CardTitle>Edit Image</CardTitle>
+        <CardDescription>
+          Modify existing images with natural language instructions
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid w-full gap-6">
+          <div 
+            {...getRootProps()} 
+            className="border-2 border-dashed rounded-lg p-8 cursor-pointer hover:border-primary/50 transition-colors text-center bg-muted/50"
+          >
+            <input {...getInputProps()} />
+            <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+            <p className="text-base font-medium">Drag & drop an image here, or click to select</p>
+            <p className="text-sm text-muted-foreground mt-1">PNG, JPG, JPEG, or WebP</p>
           </div>
-        </div>
-      </div>
-      
-      {selectedImage && (
-        <div className="mb-4">
-          <h3 className="text-lg font-medium mb-2">Selected Image</h3>
-          <div className="border rounded-md overflow-hidden">
-            <img 
-              src={selectedImage} 
-              alt="Selected for editing" 
-              className="w-full h-auto"
+          
+          {selectedImage && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium">Selected Image</h3>
+              <div className="border rounded-md overflow-hidden shadow-sm">
+                <img 
+                  src={selectedImage} 
+                  alt="Selected for editing" 
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="flex flex-col space-y-2">
+            <Label htmlFor="editPrompt" className="text-base">
+              Editing instructions
+            </Label>
+            <Textarea
+              id="editPrompt"
+              placeholder="Describe how you want to edit the image in detail..."
+              className="min-h-32 text-base"
+              value={editPrompt}
+              onChange={(e) => setEditPrompt(e.target.value)}
             />
           </div>
+          
+          {error && (
+            <div className="p-4 bg-destructive/15 text-destructive rounded-md border border-destructive/30">
+              <p>{error}</p>
+            </div>
+          )}
+          
+          {editedImage && !error && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium">Edited Image</h3>
+              <div className="border rounded-md overflow-hidden shadow-sm">
+                <img 
+                  src={editedImage} 
+                  alt="Edited result" 
+                  className="w-full h-auto"
+                />
+              </div>
+              <div className="p-3 bg-muted rounded-md">
+                <p className="text-sm"><span className="font-medium">Edit instructions:</span> {editPrompt}</p>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-      
-      <div className="mb-4">
-        <label htmlFor="editPrompt" className="block text-sm font-medium mb-2">
-          Editing instructions
-        </label>
-        <textarea
-          id="editPrompt"
-          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-          rows={3}
-          placeholder="Describe how you want to edit the image..."
-          value={editPrompt}
-          onChange={(e) => setEditPrompt(e.target.value)}
-        />
-      </div>
-      
-      <button
-        onClick={handleEdit}
-        disabled={isEditing || !selectedImage || !editPrompt.trim()}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {isEditing ? (
-          <>
-            <Loader2 className="inline-block animate-spin mr-2" size={16} />
-            Editing...
-          </>
-        ) : (
-          'Edit Image'
-        )}
-      </button>
-      
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
-      
-      {editedImage && !error && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Edited Image</h3>
-          <div className="border rounded-md overflow-hidden">
-            <img 
-              src={editedImage} 
-              alt="Edited result" 
-              className="w-full h-auto"
-            />
-          </div>
-          <div className="mt-2 text-sm text-gray-500">
-            <p>Edit instructions: {editPrompt}</p>
-          </div>
-        </div>
-      )}
-    </div>
+      </CardContent>
+      <CardFooter>
+        <Button 
+          onClick={handleEdit}
+          disabled={isEditing || !selectedImage || !editPrompt.trim()}
+          className="w-full"
+          size="lg"
+        >
+          {isEditing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Editing Image...
+            </>
+          ) : (
+            'Edit Image'
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
