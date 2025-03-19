@@ -1,9 +1,20 @@
 # Gemini Image Generation API
 
-Generate and edit images using Google's Gemini 2.0 Flash model through a simple Next.js API. Perfect for developers looking to add AI image generation capabilities to their applications.
+A Next.js application that leverages Google's Gemini 2.0 Flash experimental model to generate and edit images through a RESTful API. This project can run standalone or via Docker Compose, featuring persistent storage for images and metadata, interactive API documentation with Swagger UI, and helper scripts for management. The application provides endpoints for image generation from text prompts, image editing with instructions, and health monitoring, making it ideal for developers looking to integrate AI-powered image capabilities into their applications or services.
 
-![Sample Generated Image 1](public/generated-images/58016f52646149a04941b16913402c98.png)
-![Sample Generated Image 2](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
+## Sample Use Cases & Results
+
+### Creative Content Generation
+Generate custom artwork for blogs, social media, or marketing materials.
+
+![Creative Content Example](public/generated-images/58016f52646149a04941b16913402c98.png)
+*Prompt: "A futuristic cityscape with flying cars and neon lights"*
+
+### Product Visualization
+Create product mockups or visualize concepts before production.
+
+![Product Visualization Example](public/generated-images/db84305b09bd1bbadbfe48ffdff42b0c.png)
+*Prompt: "A sleek smartphone with holographic display in a modern living room"*
 
 ## Prerequisites
 
@@ -15,8 +26,8 @@ Generate and edit images using Google's Gemini 2.0 Flash model through a simple 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/jkmaina/gemini-image.git
-   cd gemini-image
+   git clone https://github.com/jkmaina/gemini-image-generator.git
+   cd gemini-image-generator
    ```
 
 2. **Install dependencies**
@@ -49,6 +60,7 @@ Generate and edit images using Google's Gemini 2.0 Flash model through a simple 
 1. Open http://localhost:3000 in your browser
 2. Enter a text prompt describing the image you want to generate
 3. Click "Generate" and wait for your image
+4. For editing, select an existing image and provide editing instructions
 
 ### Using the API Directly
 
@@ -69,14 +81,25 @@ curl -X POST http://localhost:3000/api/edit \
   }'
 ```
 
-## Features
+## Key Features
 
-- 🎨 Generate images from text descriptions
-- ✏️ Edit existing images with text instructions
-- 📚 Interactive API documentation
-- 💾 Persistent storage for generated images
-- 🔍 Image metadata tracking
-- 🚀 Fast response times
+- **Image Generation**: Create images from text prompts using Gemini 2.0 Flash
+- **Image Editing**: Modify existing images with text instructions
+- **Persistent Storage**: Store generated images and their metadata
+- **API Documentation**: Interactive Swagger UI documentation
+- **Health Monitoring**: Health check endpoint for container orchestration
+- **Rate Limiting**: Configurable rate limiting to prevent abuse
+- **Automatic Cleanup**: Tools to manage and clean up old images
+
+## Use Cases
+
+- **Content Creation**: Generate custom images for websites, blogs, and social media
+- **Product Design**: Visualize product concepts and variations
+- **Marketing Materials**: Create unique visuals for marketing campaigns
+- **UI/UX Prototyping**: Generate interface mockups and design elements
+- **Educational Content**: Create illustrations for educational materials
+- **Game Development**: Generate concept art and game assets
+- **E-commerce**: Create product visualizations and variations
 
 ## Docker Support (Optional)
 
@@ -101,6 +124,14 @@ docker-compose down
 ├── lib/                 # Utility functions
 └── data/               # Metadata storage
 ```
+
+## Technical Stack
+
+- **Frontend/Backend**: Next.js 14
+- **API Documentation**: Swagger UI / OpenAPI
+- **Containerization**: Docker with Docker Compose (optional)
+- **Image Generation**: Google Gemini 2.0 Flash API
+- **Storage**: File-based with JSON metadata
 
 ## Contributing
 
