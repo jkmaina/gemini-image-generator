@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,21 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 
 interface ImageEditorFormProps {
   onImageEdited?: (imageUrl: string) => void;
+  initialImageUrl?: string;
 }
 
-export function ImageEditorForm({ onImageEdited }: ImageEditorFormProps) {
+export function ImageEditorForm({ onImageEdited, initialImageUrl = "" }: ImageEditorFormProps) {
   const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(initialImageUrl);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Update imageUrl when initialImageUrl changes
+  useEffect(() => {
+    if (initialImageUrl) {
+      setImageUrl(initialImageUrl);
+    }
+  }, [initialImageUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

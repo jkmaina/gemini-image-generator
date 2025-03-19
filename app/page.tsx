@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImageGeneratorForm } from "@/components/image-generator-form";
 import { ImageEditorForm } from "@/components/image-editor-form";
@@ -9,6 +9,7 @@ import { ApiInfo } from "@/components/api-info";
 
 export default function Home() {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
 
   const handleImageGenerated = (imageUrl: string) => {
     setCurrentImageUrl(imageUrl);
@@ -29,16 +30,21 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div>
-          <Tabs defaultValue="generate" className="w-full">
+          <Tabs defaultValue="generate" className="w-full" ref={tabsRef}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="generate">Generate</TabsTrigger>
               <TabsTrigger value="edit">Edit</TabsTrigger>
             </TabsList>
             <TabsContent value="generate">
-              <ImageGeneratorForm onImageGenerated={handleImageGenerated} />
+              <ImageGeneratorForm 
+                onImageGenerated={handleImageGenerated} 
+              />
             </TabsContent>
             <TabsContent value="edit">
-              <ImageEditorForm onImageEdited={handleImageEdited} />
+              <ImageEditorForm 
+                onImageEdited={handleImageEdited} 
+                initialImageUrl={currentImageUrl || ""}
+              />
             </TabsContent>
           </Tabs>
         </div>
