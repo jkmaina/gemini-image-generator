@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { getImageMetadata } from "@/lib/utils";
+import { getImageMetadata } from "@/lib/server-utils";
 import { ApiResponse } from "@/lib/types";
 
 // Get image metadata by ID

@@ -96,8 +96,8 @@ Create product images and easily modify product attributes with simple text inst
    ```
 
 5. **Access the application**
-   - Web Interface: http://localhost:3000
-   - API Documentation: http://localhost:3000/docs
+   - Web Interface: http://localhost:3010
+   - API Documentation: http://localhost:3010/docs
 
 ## API Reference
 

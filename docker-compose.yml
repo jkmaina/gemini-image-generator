@@ -5,17 +5,18 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3010:3010"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - RATE_LIMIT=10
       - RATE_LIMIT_WINDOW_MS=60000
+      - PORT=3010
     volumes:
       - ./data:/app/data
       - ./public/generated-images:/app/public/generated-images
     user: "1000:1000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3010/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

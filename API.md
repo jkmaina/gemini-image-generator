@@ -7,7 +7,7 @@ This document provides detailed technical information about the Gemini Image API
 All API endpoints are relative to your base URL:
 
 ```
-http://localhost:3000/api
+http://localhost:3010/api
 ```
 
 ## Docker Deployment
@@ -20,7 +20,7 @@ docker build -t gemini-image-api .
 
 # Run the container
 docker run -d \
-  -p 3000:3000 \
+  -p 3010:3010 \
   -e GEMINI_API_KEY=your_api_key_here \
   --name gemini-api \
   gemini-image-api
@@ -334,7 +334,7 @@ When the rate limit is exceeded, the API returns a `429 Too Many Requests` respo
 Generated images are stored in the `/public/generated-images/` directory and are accessible via URLs like:
 
 ```
-http://localhost:3000/generated-images/f350adb290046c5fd7d46298d677b922.png
+http://localhost:3010/generated-images/f350adb290046c5fd7d46298d677b922.png
 ```
 
 Image metadata is stored in the `/data/metadata/` directory as JSON files.
@@ -345,7 +345,7 @@ For production deployments, you should use Docker volumes to persist image data:
 
 ```bash
 docker run -d \
-  -p 3000:3000 \
+  -p 3010:3010 \
   -e GEMINI_API_KEY=your_api_key_here \
   -v gemini_images:/app/public/generated-images \
   -v gemini_metadata:/app/data/metadata \

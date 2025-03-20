@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listImageMetadata, cleanupOldImages } from "@/lib/utils";
+import { listImageMetadata, cleanupOldImages } from "@/lib/server-utils";
 import { ApiResponse } from "@/lib/types";
 
 // List images endpoint
