@@ -1,0 +1,57 @@
+steps:
+  # Install dependencies
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+    
+  # Build the Next.js application
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+    env:
+      - 'NODE_ENV=production'
+      - 'GEMINI_API_KEY=${_GEMINI_API_KEY}'
+      - 'GCS_PRODUCTION_BUCKET_NAME=${_GCS_PRODUCTION_BUCKET_NAME}'
+      - 'RATE_LIMIT=${_RATE_LIMIT}'
+      - 'RATE_LIMIT_WINDOW_MS=${_RATE_LIMIT_WINDOW_MS}'
+      
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/${PROJECT_ID}/gemini-image-generator:${SHORT_SHA}',
+      '.'
+    ]
+    
+  # Push the Docker image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/${PROJECT_ID}/gemini-image-generator:${SHORT_SHA}']
+      
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'gemini-image-generator'
+      - '--image=gcr.io/${PROJECT_ID}/gemini-image-generator:${SHORT_SHA}'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--set-env-vars=NODE_ENV=production'
+      - '--set-env-vars=GEMINI_API_KEY=${_GEMINI_API_KEY}'
+      - '--set-env-vars=GCS_PRODUCTION_BUCKET_NAME=${_GCS_PRODUCTION_BUCKET_NAME}'
+      - '--set-env-vars=RATE_LIMIT=${_RATE_LIMIT}'
+      - '--set-env-vars=RATE_LIMIT_WINDOW_MS=${_RATE_LIMIT_WINDOW_MS}'
+      
+images:
+  - 'gcr.io/${PROJECT_ID}/gemini-image-generator:${SHORT_SHA}'
+  
+substitutions:
+  _GEMINI_API_KEY: '' # Will be provided by Cloud Build trigger
+  _GCS_PRODUCTION_BUCKET_NAME: 'zavora-ai-generated-images'
+  _RATE_LIMIT: '10'
+  _RATE_LIMIT_WINDOW_MS: '60000'
+  
+options:
+  logging: CLOUD_LOGGING_ONLY
