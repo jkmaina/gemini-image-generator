@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { createHash } from 'crypto';
+import { Storage } from '@google-cloud/storage';
+
+// Initialize Google Cloud Storage with appropriate credentials based on environment
+let storage;
+if (process.env.NODE_ENV === 'production') {
+  // In production, use Application Default Credentials
+  storage = new Storage();
+} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  // In development with explicit credentials
+  storage = new Storage({
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+  });
+} else {
+  // Fallback to default credentials
+  storage = new Storage();
+}
+
+const bucketName = process.env.NODE_ENV === 'production' 
+  ? (process.env.GCS_PRODUCTION_BUCKET_NAME || 'zavora-ai-generated-images')
+  : (process.env.GCS_BUCKET_NAME || 'gemini-image-test-bucket');
+const bucket = storage.bucket(bucketName);
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,10 +50,20 @@ export async function POST(request: NextRequest) {
     }
     
     const filename = `${hash}.${extension}`;
-    const filepath = join(process.cwd(), 'public', 'generated-images', filename);
     
-    // Write the file to disk
-    await writeFile(filepath, Buffer.from(buffer));
+    // Upload the file to Google Cloud Storage
+    const file = bucket.file(filename);
+    await file.save(Buffer.from(buffer), {
+      metadata: {
+        contentType: mimeType,
+      }
+    });
+    
+    // Make the file publicly accessible
+    await file.makePublic();
+    
+    // Get the public URL
+    const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
     
     // Create metadata
     const metadata = {
@@ -44,14 +73,14 @@ export async function POST(request: NextRequest) {
       filename,
       mimeType,
       size: buffer.byteLength,
-      url: `/generated-images/${filename}`,
+      url: publicUrl,
     };
     
     // Return the image URL
     return NextResponse.json({
       success: true,
       data: {
-        imageUrl: `/generated-images/${filename}`,
+        imageUrl: publicUrl,
         description: null,
         metadata,
       },
