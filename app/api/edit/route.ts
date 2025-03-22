@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 import { saveImage, fetchImageFromUrl } from '@/lib/storage';
 import { rateLimit } from '@/lib/rate-limit';
 import { limiter } from '@/lib/limiter';
@@ -50,18 +50,16 @@ export async function POST(request: NextRequest) {
     });
     
     // Create a prompt with the image
-    const parts = [
-      { text: prompt },
-      {
-        inlineData: {
-          mimeType: 'image/png',
-          data: base64Image,
-        },
-      },
-    ];
+    const textPart: Part = { text: prompt };
+    const imagePart: Part = {
+      inlineData: {
+        mimeType: 'image/png',
+        data: base64Image,
+      }
+    };
     
     // Generate the image
-    const result = await model.generateContent(parts);
+    const result = await model.generateContent([textPart, imagePart]);
     
     const response = result.response;
     const text = response.text();
