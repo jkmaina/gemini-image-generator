@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { listImageMetadata, cleanupOldImages } from "@/lib/server-utils";
+import { listImageMetadata, cleanupOldImages } from "@/lib/storage";
 import { ApiResponse } from "@/lib/types";
 
 // List images endpoint
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get("offset") || "0");
     
     // Get list of images with metadata
-    const images = await listImageMetadata(limit, offset);
+    const images = await listImageMetadata(limit);
     
     return NextResponse.json({
       success: true,
