@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Create a prompt with the image
-    const prompt_parts = [
+    const parts = [
       { text: prompt },
       {
         inlineData: {
@@ -61,9 +61,7 @@ export async function POST(request: NextRequest) {
     ];
     
     // Generate the image
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: prompt_parts }],
-    });
+    const result = await model.generateContent(parts);
     
     const response = result.response;
     const text = response.text();
