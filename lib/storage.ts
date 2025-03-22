@@ -2,6 +2,7 @@ import { Storage } from '@google-cloud/storage';
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
+import axios from 'axios';
 
 // Types
 export interface ImageOptions {
@@ -22,11 +23,14 @@ export interface ImageMetadata {
 
 // Create metadata directory if it doesn't exist
 const metadataDir = path.join(process.cwd(), "data", "metadata");
+const imagesDir = path.join(process.cwd(), "data", "images");
 
 // Initialize directories
 export async function initDirectories() {
   await fs.mkdir(metadataDir, { recursive: true });
+  await fs.mkdir(imagesDir, { recursive: true });
   console.log('Initialized metadata directory:', metadataDir);
+  console.log('Initialized images directory:', imagesDir);
 }
 
 // Initialize Google Cloud Storage with appropriate credentials based on environment
@@ -135,5 +139,97 @@ export async function saveImage(
   } catch (error) {
     console.error('Error in saveImage:', error);
     throw error;
+  }
+}
+
+// Get image metadata by ID
+export async function getImageMetadata(id: string): Promise<ImageMetadata | null> {
+  try {
+    const metadataPath = path.join(metadataDir, `${id}.json`);
+    const data = await fs.readFile(metadataPath, 'utf-8');
+    return JSON.parse(data) as ImageMetadata;
+  } catch (error) {
+    console.error(`Error getting metadata for image ${id}:`, error);
+    return null;
+  }
+}
+
+// List all image metadata
+export async function listImageMetadata(limit: number = 100): Promise<ImageMetadata[]> {
+  try {
+    const files = await fs.readdir(metadataDir);
+    const jsonFiles = files.filter(file => file.endsWith('.json'));
+    
+    // Sort by creation time (newest first)
+    const metadataPromises = jsonFiles.slice(0, limit).map(async (file) => {
+      const filePath = path.join(metadataDir, file);
+      const data = await fs.readFile(filePath, 'utf-8');
+      return JSON.parse(data) as ImageMetadata;
+    });
+    
+    const metadataList = await Promise.all(metadataPromises);
+    return metadataList.sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  } catch (error) {
+    console.error('Error listing image metadata:', error);
+    return [];
+  }
+}
+
+// Fetch image from URL
+export async function fetchImageFromUrl(url: string): Promise<Buffer> {
+  try {
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    return Buffer.from(response.data, 'binary');
+  } catch (error) {
+    console.error('Error fetching image from URL:', error);
+    throw error;
+  }
+}
+
+// Clean up old images (keep only the most recent ones)
+export async function cleanupOldImages(maxImages: number = 100): Promise<void> {
+  try {
+    const metadata = await listImageMetadata();
+    
+    if (metadata.length <= maxImages) {
+      return;
+    }
+    
+    const toDelete = metadata.slice(maxImages);
+    
+    for (const item of toDelete) {
+      try {
+        // Delete from GCS
+        try {
+          await bucket.file(item.filename).delete();
+        } catch (error) {
+          console.error(`Error deleting ${item.filename} from GCS:`, error);
+        }
+        
+        // Delete local file
+        try {
+          const localPath = path.join(imagesDir, item.filename);
+          await fs.unlink(localPath);
+        } catch (error) {
+          console.error(`Error deleting local file ${item.filename}:`, error);
+        }
+        
+        // Delete metadata
+        try {
+          const metadataPath = path.join(metadataDir, `${item.id}.json`);
+          await fs.unlink(metadataPath);
+        } catch (error) {
+          console.error(`Error deleting metadata for ${item.id}:`, error);
+        }
+      } catch (error) {
+        console.error(`Error during cleanup for image ${item.id}:`, error);
+      }
+    }
+    
+    console.log(`Cleaned up ${toDelete.length} old images`);
+  } catch (error) {
+    console.error('Error during image cleanup:', error);
   }
 }
